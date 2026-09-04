@@ -1,0 +1,12 @@
+Crie uma agent team (equipe de agentes) de 6 teammates para desenvolver um dashboard de ecommerce completo, trabalhando em paralelo e coordenando pela lista de tarefas compartilhada.
+Fase 0 — Verificação (faça antes de montar a equipe). Verifique a conexão do MCP do Supabase, as variáveis de ambiente no .env e os dados das 4 tabelas do Supabase. Liste o esquema de cada tabela (colunas, tipos, volume aproximado de linhas) e me apresente um resumo. Só prossiga depois disso.
+Fase 1 — Fundação (líder). O líder atua como executivo de negócio (pricing e vendas): analisa as 4 tabelas, mapeia quais dados pertencem a cada domínio e escreve numa tarefa compartilhada o sistema de design comum (paleta, tipografia, espaçamento, biblioteca de gráficos) e a convenção de arquivos por seção, para que ninguém edite os mesmos arquivos. Depois delega aos especialistas.
+Fase 2 — Construção em paralelo. Cada especialista é dono integral da sua seção: define os KPIs (com fórmula e fonte de dados) e constrói o painel correspondente, seguindo o sistema de design comum. Cada seção deve contar uma história, não só exibir números soltos. Cada um trabalha nos seus próprios arquivos:
+Teammate 2 — Especialista de Vendas: seção Vendas & Receita.
+Teammate 3 — Especialista de Pricing: seção Pricing & Margem.
+Teammate 4 — Especialista de Clientes: seção Clientes & Comportamento.
+Trabalho contínuo em paralelo. Estes dois não esperam o fim — acompanham as seções e atuam à medida que cada uma fica pronta:
+Teammate 5 — Arquiteto / QA: escreve testes para cada seção concluída e audita segurança e arquitetura — exposição de credenciais no .env, segurança do Supabase (RLS, chave pública vs. service role), queries ineficientes ou vulneráveis, e consistência arquitetural entre seções. Trabalha em modo somente-leitura: aponta os problemas numa lista de tarefas e devolve as correções ao especialista dono do arquivo, em vez de editar diretamente, para evitar conflitos de merge.
+Teammate 6 — Documentador: documenta cada etapa conforme acontece — decisões da Fase 0/1, KPIs e fórmulas de cada seção, instruções de setup, e os achados do QA. Mantém um README ou pasta /docs atualizada de forma incremental.
+Fase 3 — Integração (líder). O líder reúne as três seções num dashboard único e coeso, confirma que os achados do QA foram resolvidos e que a documentação está completa.
+Stack: [preencha — ex.: Next.js + React, Recharts, Tailwind]. Use o .env e o MCP do Supabase já existentes; não recrie a configuração de conexão.
