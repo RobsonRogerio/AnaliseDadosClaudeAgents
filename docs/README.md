@@ -149,6 +149,18 @@ Auditoria completa em `docs/qa-findings.md` (propriedade do QA). Veredito final:
 - Pricing não extraiu um `ChartCard.tsx` próprio (o wrapper de card está duplicado inline em 4 arquivos); vendas/clientes já têm o componente.
 - Formatadores (`formatBRL`, `formatInt`, `formatPercent`) reimplementados de forma quase idêntica em cada seção, por não existir um `lib/format.ts` compartilhado.
 
+## App complementar de análise (Streamlit)
+
+Além do dashboard de negócio (Next.js, 3 seções de KPI fixas), o projeto tem um segundo painel em `streamlit_app/`: uma ferramenta **exploratória/analítica**, não um port das mesmas seções. Onde o dashboard de negócio mostra KPIs fixos e histórias fechadas, o app Streamlit oferece **filtros livres + drill-down linha a linha** (`pages/1_Filtros_e_Drilldown.py`) e **visões estatísticas** (`pages/2_Correlacoes_e_Outliers.py`) — distribuições, matriz de correlação, detecção de outliers por IQR no índice de competitividade e dispersão de preço de concorrentes — que o dashboard de negócio não cobre.
+
+**Acesso a dados**: o app Streamlit lê via a mesma chave `anon`/PostgREST restrita por RLS que o dashboard Next.js já usa em produção (`SUPABASE_URL` + `SUPABASE_ANON_KEY`, já presentes no `.env` da raiz) — não conecta via `DATABASE_URL`. Como o PostgREST expõe só `SELECT` em tabelas inteiras (sem SQL arbitrário), todo join e agregação (médias, desvio padrão, correlação, detecção de outliers) acontece em pandas dentro do próprio app, mesmo padrão de `dashboard/*/utils.ts`. A leitura de `vendas` (3020 linhas) pagina em blocos de 1000 (`db.fetch_table`), mesma técnica de `fetchAllVendas` no dashboard Next.js.
+
+**Postura de segurança**: por usar só a chave `anon` (mesma fronteira de confiança do dashboard Next.js, protegida por RLS — só leitura, sem INSERT/UPDATE/DELETE), o app Streamlit é seguro para **publicar com link aberto** (ex. Streamlit Community Cloud), diferente de uma ferramenta conectada direto no Postgres com `DATABASE_URL`. `DATABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` nunca devem ser usadas neste app — ficam reservadas para `scripts/load_data.py`, que só roda localmente.
+
+O índice de competitividade (`preco_atual / média(preco_concorrente)`) é reaproveitado exatamente como validado na seção [Pricing](#pricing--posicionamento-competitivo) acima. O achado de qualidade de dado P2 (categoria Tênis em 2,00x, artefato sintético — ver `docs/qa-findings.md`) é citado inline no app como um achado já conhecido, não recalculado como novidade.
+
+Setup: `pip install -r requirements.txt` (na raiz) + `streamlit run streamlit_app/Home.py` — reaproveita `SUPABASE_URL`/`SUPABASE_ANON_KEY` já presentes no `.env` da raiz, sem arquivo de segredo separado. Para publicar em produção, configure essas duas variáveis nos Secrets da plataforma de deploy. Ver `streamlit_app/README.md` para detalhes.
+
 ## Setup
 
 Pré-requisitos: Node.js 18+ e acesso ao projeto Supabase (URL + chave anon).
