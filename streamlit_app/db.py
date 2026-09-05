@@ -38,11 +38,20 @@ SUPABASE_ANON_KEY = _get_config("SUPABASE_ANON_KEY")
 
 
 def _validate_config() -> None:
-    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    faltando = [
+        name
+        for name, value in (("SUPABASE_URL", SUPABASE_URL), ("SUPABASE_ANON_KEY", SUPABASE_ANON_KEY))
+        if not value
+    ]
+    if faltando:
         st.error(
-            "SUPABASE_URL / SUPABASE_ANON_KEY não configuradas. Localmente, "
-            "preencha o `.env` da raiz do repositório; em deploy (Streamlit "
-            "Cloud), configure-as em Secrets."
+            f"Faltando: {', '.join(faltando)}. Localmente, preencha o `.env` "
+            "da raiz do repositório; em deploy (Streamlit Cloud), configure "
+            "em App settings → Secrets, como:\n\n"
+            'SUPABASE_URL = "https://SEU-PROJETO.supabase.co"\n'
+            'SUPABASE_ANON_KEY = "sua-chave-anon"\n\n'
+            "Depois de salvar, o app deve reiniciar sozinho — se não "
+            "reiniciar, use \"Reboot app\" no menu (⋮)."
         )
         st.stop()
 
